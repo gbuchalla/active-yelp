@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const Gym = require('./models/gym');
 const ExpressError = require('./utils/newExpressError');
+const catchAsync = require('./utils/catchAsync');
 
 
 // Setup e tratamento de erros da conexão com a database
@@ -26,11 +27,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 // Funções middleware
-function catchAsync(asyncFunction) {
-    return function (req, res, next) {
-        asyncFunction(req, res, next).catch(err => next(err));
-    };
-};
 
 // Homepage route
 app.get('/', (req, res) => {
