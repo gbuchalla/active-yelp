@@ -3,8 +3,12 @@ const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
 const Gym = require('./models/gym');
+const User = require('./models/user');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
 
@@ -26,11 +30,50 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-// Funções middleware
+app.use(session({ secret: 'segredo tentativo', resave: true, saveUninitialized: true }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.createStrategy()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 
 // Homepage route
 app.get('/', (req, res) => {
     res.send('Homepage');
+});
+
+// User routes
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+app.post('/register', (req, res, next) => {
+    // Usar async aqui. Retirar callback no 'register' model method, e usar await.
+    User.register(req.body.username, req.body.password, (err, user) => {
+        if (err) {
+            console.log('Erro no registro de usuário:', err);
+            return next(err);
+        }
+        console.log('Usuário registrado com sucesso.\nUsuário:', user);
+        res.redirect('back' || '/');
+    });
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('back' || '/')
+});
+
+app.post('/logout', (req, res) => {
+    req.logout();
+    res.redirect('back' || '/');
 });
 
 // Gyms routes
