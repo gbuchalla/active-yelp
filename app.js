@@ -3,8 +3,12 @@ const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
 const Gym = require('./models/gym');
+const User = require('./models/user');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
 
@@ -26,17 +30,62 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-// Funções middleware
+app.use(session({ secret: 'random secret', resave: true, saveUninitialized: true }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 
 // Homepage route
 app.get('/', (req, res) => {
     res.send('Homepage');
 });
 
+// User routes
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+app.post('/register', (req, res, next) => {
+    const { username, password } = req.body
+    User.register({ username }, password, (err, newUser) => {
+        if (err) {
+            return next(new ExpressError(err.status, `Algo deu errado no registro de usuário: ${err.message}`));
+        }
+        console.log('Usuário registrado com sucesso.\nUsuário:', newUser);
+        req.login(newUser, e => {
+            if (e) return next(e);
+            console.log('req.user:', req.user);
+            res.redirect('/gyms');
+        })
+    })
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('/gyms')
+});
+
+app.post('/logout', (req, res) => {
+    req.logout(err => {
+        if (err) return next(err);
+    });
+    res.redirect('/gyms');
+});
+
 // Gyms routes
 app.get('/gyms', catchAsync(async (req, res) => {
     const allGyms = await Gym.find({});
-    res.render('index', { gyms: allGyms });
+    console.log('req.user', req.user);
+    res.render('index', { gyms: allGyms, user: req.user });
 }));
 
 app.get('/gyms/new', (req, res) => {
