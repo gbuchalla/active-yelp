@@ -30,12 +30,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
-app.use(session({ secret: 'segredo tentativo', resave: true, saveUninitialized: true }));
+app.use(session({ secret: 'random secret', resave: true, saveUninitialized: true }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy(User.createStrategy()));
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -52,15 +52,18 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res, next) => {
-    // Usar async aqui. Retirar callback no 'register' model method, e usar await.
-    User.register(req.body.username, req.body.password, (err, user) => {
+    const { username, password } = req.body
+    User.register({ username }, password, (err, newUser) => {
         if (err) {
-            console.log('Erro no registro de usuário:', err);
-            return next(err);
+            return next(new ExpressError(err.status, `Algo deu errado no registro de usuário: ${err.message}`));
         }
-        console.log('Usuário registrado com sucesso.\nUsuário:', user);
-        res.redirect('back' || '/');
-    });
+        console.log('Usuário registrado com sucesso.\nUsuário:', newUser);
+        req.login(newUser, e => {
+            if (e) return next(e);
+            console.log('req.user:', req.user);
+            res.redirect('/gyms');
+        })
+    })
 });
 
 app.get('/login', (req, res) => {
@@ -68,18 +71,21 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect('back' || '/')
+    res.redirect('/gyms')
 });
 
 app.post('/logout', (req, res) => {
-    req.logout();
-    res.redirect('back' || '/');
+    req.logout(err => {
+        if (err) return next(err);
+    });
+    res.redirect('/gyms');
 });
 
 // Gyms routes
 app.get('/gyms', catchAsync(async (req, res) => {
     const allGyms = await Gym.find({});
-    res.render('index', { gyms: allGyms });
+    console.log('req.user', req.user);
+    res.render('index', { gyms: allGyms, user: req.user });
 }));
 
 app.get('/gyms/new', (req, res) => {

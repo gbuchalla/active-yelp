@@ -8,6 +8,17 @@
 </head>
 
 <body>
+    <header>
+        <% if (user) { %> 
+        <form action="/logout" method="POST">
+            <button>Logout</button>
+        </form>
+        <br>
+        <% } %> 
+        <a href="/register">Criar uma conta</a>
+        <br>
+        <a href="/login">Entrar em uma conta</a>
+    </header>
     <h1>All Gyms</h1>
     <div>
         <a href="/gyms/new">Add Gym</a>
