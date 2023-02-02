@@ -5,6 +5,10 @@ const gymSchema = new mongoose.Schema({
     location: String,
     price: String,
     description: String,
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Review'
+    }]
 });
 
 const Gym = mongoose.model('Gym', gymSchema);
