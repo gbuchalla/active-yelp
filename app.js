@@ -9,6 +9,7 @@ const LocalStrategy = require('passport-local');
 
 const Gym = require('./models/gym');
 const User = require('./models/user');
+const Review = require('./models/review');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
 
@@ -104,8 +105,14 @@ app.post('/gyms', catchAsync(async (req, res, next) => {
 
 app.get('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const foundGym = await Gym.findById(id);
-    res.render('show', { gym: foundGym });
+    const foundGym = await Gym.findById(id)
+        .populate({
+            path: 'reviews',
+            populate: {
+                path: 'author'
+            }
+        });
+    res.render('show', { gym: foundGym, user: req.user });
 }));
 
 app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
@@ -125,6 +132,31 @@ app.delete('/gyms/:id', catchAsync(async (req, res) => {
     await Gym.findByIdAndDelete(id);
     res.redirect('/gyms');
 }));
+
+// Review routes
+app.post('/gyms/:id', catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { rating, description } = req.body.review;
+    const newReview = new Review({ rating, description, author: req.user });
+    const foundGym = await Gym.findById(id);
+    foundGym.reviews.push(newReview);
+    await newReview.save();
+    await foundGym.save();
+    res.redirect(`/gyms/${id}`);
+}));
+
+app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Review.findByIdAndDelete(reviewId);
+    const foundGym = await Gym.findById(id);
+    foundGym.reviews.pull({ _id: reviewId });
+    foundGym.save();
+    // Second method
+    // foundGym.update({ $pull: { reviews: { _id: reviewId } } })
+    // foundGym.save();
+    res.redirect(`/gyms/${id}`)
+}));
+
 
 // Middleware de tratamento de erro
 
