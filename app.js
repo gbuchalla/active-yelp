@@ -151,9 +151,6 @@ app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const foundGym = await Gym.findById(id);
     foundGym.reviews.pull({ _id: reviewId });
     foundGym.save();
-    // Second method
-    // foundGym.update({ $pull: { reviews: { _id: reviewId } } })
-    // foundGym.save();
     res.redirect(`/gyms/${id}`)
 }));
 
