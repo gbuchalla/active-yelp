@@ -99,7 +99,6 @@ app.post('/gyms', catchAsync(async (req, res, next) => {
     const validGymData = await joiGymSchema.validateAsync(req.body.gym);
     const newGym = new Gym({ ...validGymData, author: req.user });
     await newGym.save();
-    console.log(newGym);
     res.redirect(`/gyms/${newGym._id}`);
 }));
 
@@ -123,7 +122,8 @@ app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
 
 app.put('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Gym.findByIdAndUpdate(id, req.body.gym)
+    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
+    await Gym.findByIdAndUpdate(id, validGymData);
     res.redirect(`/gyms/${id}`);
 }));
 
