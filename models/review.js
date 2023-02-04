@@ -1,11 +1,19 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-    rating: Number,
-    description: String,
+    rating: {
+        type: Number,
+        enum: [1, 2, 3, 4, 5],
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     }
 });
 

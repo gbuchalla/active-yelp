@@ -2,7 +2,6 @@ const Joi = require('joi');
 
 const joiGymSchema = Joi.object({
     title: Joi.string()
-        .alphanum()
         .required(),
 
     location: Joi.string()

@@ -10,6 +10,7 @@ const LocalStrategy = require('passport-local');
 const Gym = require('./models/gym');
 const User = require('./models/user');
 const Review = require('./models/review');
+const { joiGymSchema, joiReviewSchema, joiUserSchema } = require('./joiSchemas');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
 
@@ -52,20 +53,21 @@ app.get('/register', (req, res) => {
     res.render('register');
 });
 
-app.post('/register', (req, res, next) => {
+app.post('/register', catchAsync(async (req, res, next) => {
     const { username, password } = req.body
+    await joiUserSchema.validateAsync({ username, password });
     User.register({ username }, password, (err, newUser) => {
         if (err) {
             return next(new ExpressError(err.status, `Algo deu errado no registro de usuário: ${err.message}`));
         }
-        console.log('Usuário registrado com sucesso.\nUsuário:', newUser);
-        req.login(newUser, e => {
-            if (e) return next(e);
-            console.log('req.user:', req.user);
+        req.login(newUser, error => {
+            if (error) {
+                return next(new ExpressError(error.status, `Um erro ocorreu no login do usuário: ${error.message}`));
+            }
             res.redirect('/gyms');
-        })
-    })
-});
+        });
+    });
+}));
 
 app.get('/login', (req, res) => {
     res.render('login');
@@ -94,13 +96,11 @@ app.get('/gyms/new', (req, res) => {
 });
 
 app.post('/gyms', catchAsync(async (req, res, next) => {
-    if (Object.values(req.body.gym).some((data) => data === '')) {
-        next(new ExpressError(400, 'Dado inserido da academia considerado inválido'));
-    } else {
-        const newGym = new Gym(req.body.gym);
-        await newGym.save();
-        res.redirect(`/gyms/${newGym._id}`);
-    }
+    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
+    const newGym = new Gym({ ...validGymData, author: req.user });
+    await newGym.save();
+    console.log(newGym);
+    res.redirect(`/gyms/${newGym._id}`);
 }));
 
 app.get('/gyms/:id', catchAsync(async (req, res) => {
@@ -136,8 +136,8 @@ app.delete('/gyms/:id', catchAsync(async (req, res) => {
 // Review routes
 app.post('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const { rating, description } = req.body.review;
-    const newReview = new Review({ rating, description, author: req.user });
+    const validReviewData = await joiReviewSchema.validateAsync(req.body.review);
+    const newReview = new Review({ ...validReviewData, author: req.user });
     const foundGym = await Gym.findById(id);
     foundGym.reviews.push(newReview);
     await newReview.save();
@@ -147,8 +147,8 @@ app.post('/gyms/:id', catchAsync(async (req, res) => {
 
 app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
-    await Review.findByIdAndDelete(reviewId);
     const foundGym = await Gym.findById(id);
+    await Review.findByIdAndDelete(reviewId);
     foundGym.reviews.pull({ _id: reviewId });
     foundGym.save();
     res.redirect(`/gyms/${id}`)
