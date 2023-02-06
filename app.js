@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -13,7 +14,9 @@ const Review = require('./models/review');
 const { joiGymSchema, joiReviewSchema, joiUserSchema } = require('./joiSchemas');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
+const { cloudinary, storage } = require('./cloudinary/index');
 
+const upload = multer({ storage: storage });
 
 // Setup e tratamento de erros da conexão com a database
 mongoose.connect('mongodb://127.0.0.1:27017/active-yelp')
@@ -95,10 +98,12 @@ app.get('/gyms/new', (req, res) => {
     res.render('new');
 });
 
-app.post('/gyms', catchAsync(async (req, res, next) => {
-    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
+app.post('/gyms', upload.array('images', 8), catchAsync(async (req, res, next) => {
+    const gymImages = req.files.map(image => ({ url: image.path, fileName: image.filename }));
+    const validGymData = await joiGymSchema.validateAsync({ ...req.body.gym, images: gymImages });
     const newGym = new Gym({ ...validGymData, author: req.user });
     await newGym.save();
+    console.log(newGym);
     res.redirect(`/gyms/${newGym._id}`);
 }));
 
