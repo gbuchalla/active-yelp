@@ -125,10 +125,26 @@ app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
     res.render('edit', { gym: foundGym });
 }));
 
-app.put('/gyms/:id', catchAsync(async (req, res) => {
+app.put('/gyms/:id', upload.array('images'), catchAsync(async (req, res) => {
     const { id } = req.params;
-    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
-    await Gym.findByIdAndUpdate(id, validGymData);
+    const newImages = req.files.map((image) => ({ url: image.path, fileName: image.filename }));
+    await joiGymSchema.validateAsync({ ...req.body.gym, images: newImages });
+    const foundGym = await Gym.findById(id);
+    foundGym.set(req.body.gym);
+    foundGym.images.push(...newImages);
+    // Lógica de remoção das imagens selecionadas
+    if (req.body.deleteImages) {
+        const imageIndex = [];
+        for (const image of foundGym.images) {
+            if (req.body.deleteImages.includes(image.fileName)) {
+                imageIndex.push(foundGym.images.indexOf(image));
+            }
+        }
+        imageIndex.sort((a, b) => b - a); 
+        imageIndex.forEach(index => foundGym.images.splice(index, 1));
+        await cloudinary.api.delete_resources(req.body.deleteImages).then(result => console.log(result));
+    }
+    await foundGym.save();
     res.redirect(`/gyms/${id}`);
 }));
 
