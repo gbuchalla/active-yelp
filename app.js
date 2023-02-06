@@ -134,7 +134,11 @@ app.put('/gyms/:id', catchAsync(async (req, res) => {
 
 app.delete('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Gym.findByIdAndDelete(id);
+    const foundGym = await Gym.findById(id);
+    foundGym.images.forEach(async (image) => {
+        await cloudinary.uploader.destroy(image.fileName).then(result => console.log(result));
+    });
+    await foundGym.delete();
     res.redirect('/gyms');
 }));
 
@@ -155,7 +159,7 @@ app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const foundGym = await Gym.findById(id);
     await Review.findByIdAndDelete(reviewId);
     foundGym.reviews.pull({ _id: reviewId });
-    foundGym.save();
+    await foundGym.save();
     res.redirect(`/gyms/${id}`)
 }));
 
