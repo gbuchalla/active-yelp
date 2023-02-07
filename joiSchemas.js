@@ -12,9 +12,9 @@ const joiGymSchema = Joi.object({
     
     images: Joi.array()
         .items(Joi.object({
-            url: Joi.string(),
-            fileName: Joi.string()
-        }).required())
+            url: Joi.string().required(),
+            fileName: Joi.string().required()
+        }))
         .max(8)
 });
 
