@@ -1,8 +1,13 @@
+const dotenv = require('dotenv').config();
+if (dotenv.error) throw dotenv.error;
+console.log(process.env);
+
 const express = require('express');
 const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -13,7 +18,9 @@ const Review = require('./models/review');
 const { joiGymSchema, joiReviewSchema, joiUserSchema } = require('./joiSchemas');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
+const { cloudinary, storage } = require('./cloudinary/index');
 
+const upload = multer({ storage: storage });
 
 // Setup e tratamento de erros da conexão com a database
 mongoose.connect('mongodb://127.0.0.1:27017/active-yelp')
@@ -87,7 +94,6 @@ app.post('/logout', (req, res) => {
 // Gyms routes
 app.get('/gyms', catchAsync(async (req, res) => {
     const allGyms = await Gym.find({});
-    console.log('req.user', req.user);
     res.render('index', { gyms: allGyms, user: req.user });
 }));
 
@@ -95,10 +101,12 @@ app.get('/gyms/new', (req, res) => {
     res.render('new');
 });
 
-app.post('/gyms', catchAsync(async (req, res, next) => {
-    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
+app.post('/gyms', upload.array('images', 8), catchAsync(async (req, res, next) => {
+    const gymImages = req.files.map(image => ({ url: image.path, fileName: image.filename }));
+    const validGymData = await joiGymSchema.validateAsync({ ...req.body.gym, images: gymImages });
     const newGym = new Gym({ ...validGymData, author: req.user });
     await newGym.save();
+    console.log(newGym);
     res.redirect(`/gyms/${newGym._id}`);
 }));
 
@@ -120,16 +128,36 @@ app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
     res.render('edit', { gym: foundGym });
 }));
 
-app.put('/gyms/:id', catchAsync(async (req, res) => {
+app.put('/gyms/:id', upload.array('images'), catchAsync(async (req, res) => {
     const { id } = req.params;
-    const validGymData = await joiGymSchema.validateAsync(req.body.gym);
-    await Gym.findByIdAndUpdate(id, validGymData);
+    const newImages = req.files.map((image) => ({ url: image.path, fileName: image.filename }));
+    await joiGymSchema.validateAsync({ ...req.body.gym, images: newImages });
+    const foundGym = await Gym.findById(id);
+    foundGym.set(req.body.gym);
+    foundGym.images.push(...newImages);
+    // Lógica de remoção das imagens selecionadas
+    if (req.body.deleteImages) {
+        const imageIndex = [];
+        for (const image of foundGym.images) {
+            if (req.body.deleteImages.includes(image.fileName)) {
+                imageIndex.push(foundGym.images.indexOf(image));
+            }
+        }
+        imageIndex.sort((a, b) => b - a); 
+        imageIndex.forEach(index => foundGym.images.splice(index, 1));
+        await cloudinary.api.delete_resources(req.body.deleteImages).then(result => console.log(result));
+    }
+    await foundGym.save();
     res.redirect(`/gyms/${id}`);
 }));
 
 app.delete('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Gym.findByIdAndDelete(id);
+    const foundGym = await Gym.findById(id);
+    foundGym.images.forEach(async (image) => {
+        await cloudinary.uploader.destroy(image.fileName).then(result => console.log(result));
+    });
+    await foundGym.delete();
     res.redirect('/gyms');
 }));
 
@@ -150,7 +178,7 @@ app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const foundGym = await Gym.findById(id);
     await Review.findByIdAndDelete(reviewId);
     foundGym.reviews.pull({ _id: reviewId });
-    foundGym.save();
+    await foundGym.save();
     res.redirect(`/gyms/${id}`)
 }));
 

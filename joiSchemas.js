@@ -8,7 +8,14 @@ const joiGymSchema = Joi.object({
         .required(),
 
     description: Joi.string()
-        .required()
+        .required(),
+    
+    images: Joi.array()
+        .items(Joi.object({
+            url: Joi.string(),
+            fileName: Joi.string()
+        }).required())
+        .max(8)
 });
 
 const joiReviewSchema = Joi.object({
