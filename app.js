@@ -1,3 +1,7 @@
+const dotenv = require('dotenv').config();
+if (dotenv.error) throw dotenv.error;
+console.log(process.env);
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -90,7 +94,6 @@ app.post('/logout', (req, res) => {
 // Gyms routes
 app.get('/gyms', catchAsync(async (req, res) => {
     const allGyms = await Gym.find({});
-    console.log('req.user', req.user);
     res.render('index', { gyms: allGyms, user: req.user });
 }));
 
