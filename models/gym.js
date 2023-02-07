@@ -14,6 +14,16 @@ const gymSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    images: [{
+        url: {
+            type: String,
+            required: true
+        },
+        fileName: {
+            type: String,
+            required: true
+        }
+    }],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
