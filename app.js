@@ -1,6 +1,5 @@
 const dotenv = require('dotenv').config();
 if (dotenv.error) throw dotenv.error;
-console.log(process.env);
 
 const express = require('express');
 const app = express();
@@ -18,6 +17,7 @@ const Review = require('./models/review');
 const { joiGymSchema, joiReviewSchema, joiUserSchema } = require('./joiSchemas');
 const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
+const { isLoggedIn, isGymAuthor, isReviewAuthor } = require('./middlewares');
 const { cloudinary, storage } = require('./cloudinary/index');
 
 const upload = multer({ storage: storage });
@@ -47,7 +47,6 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
 
 
 // Homepage route
@@ -97,11 +96,11 @@ app.get('/gyms', catchAsync(async (req, res) => {
     res.render('index', { gyms: allGyms, user: req.user });
 }));
 
-app.get('/gyms/new', (req, res) => {
+app.get('/gyms/new', isLoggedIn, (req, res) => {
     res.render('new');
 });
 
-app.post('/gyms', upload.array('images', 8), catchAsync(async (req, res, next) => {
+app.post('/gyms', isLoggedIn, upload.array('images', 8), catchAsync(async (req, res, next) => {
     const gymImages = req.files.map(image => ({ url: image.path, fileName: image.filename }));
     const validGymData = await joiGymSchema.validateAsync({ ...req.body.gym, images: gymImages });
     const newGym = new Gym({ ...validGymData, author: req.user });
@@ -122,13 +121,13 @@ app.get('/gyms/:id', catchAsync(async (req, res) => {
     res.render('show', { gym: foundGym, user: req.user });
 }));
 
-app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
+app.get('/gyms/:id/edit', isLoggedIn, isGymAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     const foundGym = await Gym.findById(id);
     res.render('edit', { gym: foundGym });
 }));
 
-app.put('/gyms/:id', upload.array('images'), catchAsync(async (req, res) => {
+app.put('/gyms/:id', isLoggedIn, isGymAuthor, upload.array('images'), catchAsync(async (req, res) => {
     const { id } = req.params;
     const newImages = req.files.map((image) => ({ url: image.path, fileName: image.filename }));
     await joiGymSchema.validateAsync({ ...req.body.gym, images: newImages });
@@ -143,7 +142,7 @@ app.put('/gyms/:id', upload.array('images'), catchAsync(async (req, res) => {
                 imageIndex.push(foundGym.images.indexOf(image));
             }
         }
-        imageIndex.sort((a, b) => b - a); 
+        imageIndex.sort((a, b) => b - a);
         imageIndex.forEach(index => foundGym.images.splice(index, 1));
         await cloudinary.api.delete_resources(req.body.deleteImages).then(result => console.log(result));
     }
@@ -151,7 +150,7 @@ app.put('/gyms/:id', upload.array('images'), catchAsync(async (req, res) => {
     res.redirect(`/gyms/${id}`);
 }));
 
-app.delete('/gyms/:id', catchAsync(async (req, res) => {
+app.delete('/gyms/:id', isLoggedIn, isGymAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     const foundGym = await Gym.findById(id);
     foundGym.images.forEach(async (image) => {
@@ -162,7 +161,7 @@ app.delete('/gyms/:id', catchAsync(async (req, res) => {
 }));
 
 // Review routes
-app.post('/gyms/:id', catchAsync(async (req, res) => {
+app.post('/gyms/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const validReviewData = await joiReviewSchema.validateAsync(req.body.review);
     const newReview = new Review({ ...validReviewData, author: req.user });
@@ -173,7 +172,7 @@ app.post('/gyms/:id', catchAsync(async (req, res) => {
     res.redirect(`/gyms/${id}`);
 }));
 
-app.delete('/gyms/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+app.delete('/gyms/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     const foundGym = await Gym.findById(id);
     await Review.findByIdAndDelete(reviewId);
