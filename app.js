@@ -19,6 +19,10 @@ const ExpressError = require('./utils/newExpressError');
 const catchAsync = require('./utils/catchAsync');
 const { isLoggedIn, isGymAuthor, isReviewAuthor } = require('./middlewares');
 const { cloudinary, storage } = require('./cloudinary/index');
+const users = require('./controllers/users');
+const gyms = require('./controllers/gyms');
+const reviews = require('./controllers/reviews');
+
 
 const upload = multer({ storage: storage });
 
@@ -55,131 +59,35 @@ app.get('/', (req, res) => {
 });
 
 // User routes
-app.get('/register', (req, res) => {
-    res.render('register');
-});
+app.get('/register', users.renderRegister);
 
-app.post('/register', catchAsync(async (req, res, next) => {
-    const { username, password } = req.body
-    await joiUserSchema.validateAsync({ username, password });
-    User.register({ username }, password, (err, newUser) => {
-        if (err) {
-            return next(new ExpressError(err.status, `Algo deu errado no registro de usuário: ${err.message}`));
-        }
-        req.login(newUser, error => {
-            if (error) {
-                return next(new ExpressError(error.status, `Um erro ocorreu no login do usuário: ${error.message}`));
-            }
-            res.redirect('/gyms');
-        });
-    });
-}));
+app.post('/register', catchAsync(users.register));
 
-app.get('/login', (req, res) => {
-    res.render('login');
-});
+app.get('/login', users.renderLogin);
 
-app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect('/gyms')
-});
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), users.login);
 
-app.post('/logout', (req, res) => {
-    req.logout(err => {
-        if (err) return next(err);
-    });
-    res.redirect('/gyms');
-});
+app.post('/logout', users.logout);
 
 // Gyms routes
-app.get('/gyms', catchAsync(async (req, res) => {
-    const allGyms = await Gym.find({});
-    res.render('index', { gyms: allGyms, user: req.user });
-}));
+app.get('/gyms', catchAsync(gyms.index));
 
-app.get('/gyms/new', isLoggedIn, (req, res) => {
-    res.render('new');
-});
+app.get('/gyms/new', isLoggedIn, gyms.renderNewForm);
 
-app.post('/gyms', isLoggedIn, upload.array('images', 8), catchAsync(async (req, res, next) => {
-    const gymImages = req.files.map(image => ({ url: image.path, fileName: image.filename }));
-    const validGymData = await joiGymSchema.validateAsync({ ...req.body.gym, images: gymImages });
-    const newGym = new Gym({ ...validGymData, author: req.user });
-    await newGym.save();
-    console.log(newGym);
-    res.redirect(`/gyms/${newGym._id}`);
-}));
+app.post('/gyms', isLoggedIn, upload.array('images', 8), catchAsync(gyms.createGym));
 
-app.get('/gyms/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const foundGym = await Gym.findById(id)
-        .populate({
-            path: 'reviews',
-            populate: {
-                path: 'author'
-            }
-        });
-    res.render('show', { gym: foundGym, user: req.user });
-}));
+app.get('/gyms/:id', catchAsync(gyms.showGym));
 
-app.get('/gyms/:id/edit', isLoggedIn, isGymAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const foundGym = await Gym.findById(id);
-    res.render('edit', { gym: foundGym });
-}));
+app.get('/gyms/:id/edit', isLoggedIn, isGymAuthor, catchAsync(gyms.renderEditForm));
 
-app.put('/gyms/:id', isLoggedIn, isGymAuthor, upload.array('images'), catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const newImages = req.files.map((image) => ({ url: image.path, fileName: image.filename }));
-    await joiGymSchema.validateAsync({ ...req.body.gym, images: newImages });
-    const foundGym = await Gym.findById(id);
-    foundGym.set(req.body.gym);
-    foundGym.images.push(...newImages);
-    // Lógica de remoção das imagens selecionadas
-    if (req.body.deleteImages) {
-        const imageIndex = [];
-        for (const image of foundGym.images) {
-            if (req.body.deleteImages.includes(image.fileName)) {
-                imageIndex.push(foundGym.images.indexOf(image));
-            }
-        }
-        imageIndex.sort((a, b) => b - a);
-        imageIndex.forEach(index => foundGym.images.splice(index, 1));
-        await cloudinary.api.delete_resources(req.body.deleteImages).then(result => console.log(result));
-    }
-    await foundGym.save();
-    res.redirect(`/gyms/${id}`);
-}));
+app.put('/gyms/:id', isLoggedIn, isGymAuthor, upload.array('images'), catchAsync(gyms.updateGym));
 
-app.delete('/gyms/:id', isLoggedIn, isGymAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const foundGym = await Gym.findById(id);
-    foundGym.images.forEach(async (image) => {
-        await cloudinary.uploader.destroy(image.fileName).then(result => console.log(result));
-    });
-    await foundGym.delete();
-    res.redirect('/gyms');
-}));
+app.delete('/gyms/:id', isLoggedIn, isGymAuthor, catchAsync(gyms.deleteGym));
 
 // Review routes
-app.post('/gyms/:id', isLoggedIn, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const validReviewData = await joiReviewSchema.validateAsync(req.body.review);
-    const newReview = new Review({ ...validReviewData, author: req.user });
-    const foundGym = await Gym.findById(id);
-    foundGym.reviews.push(newReview);
-    await newReview.save();
-    await foundGym.save();
-    res.redirect(`/gyms/${id}`);
-}));
+app.post('/gyms/:id', isLoggedIn, catchAsync(reviews.createReview));
 
-app.delete('/gyms/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    const foundGym = await Gym.findById(id);
-    await Review.findByIdAndDelete(reviewId);
-    foundGym.reviews.pull({ _id: reviewId });
-    await foundGym.save();
-    res.redirect(`/gyms/${id}`)
-}));
+app.delete('/gyms/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview));
 
 
 // Middleware de tratamento de erro
