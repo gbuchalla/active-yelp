@@ -22,7 +22,7 @@
     <hr>
     <% if (user) { %>
     <h3>Deixe uma review!</h3>
-    <form action="/gyms/<%= gym._id %>" method="POST">
+    <form action="/gyms/<%= gym._id %>/reviews" method="POST">
         <div> 
             <label for="rating">Rating: </label>
             <input type="range" name="review[rating]" id="rating" min="1" max="5">

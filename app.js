@@ -6,25 +6,16 @@ const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
-const multer = require('multer');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
-const Gym = require('./models/gym');
 const User = require('./models/user');
-const Review = require('./models/review');
-const { joiGymSchema, joiReviewSchema, joiUserSchema } = require('./joiSchemas');
 const ExpressError = require('./utils/newExpressError');
-const catchAsync = require('./utils/catchAsync');
-const { isLoggedIn, isGymAuthor, isReviewAuthor } = require('./middlewares');
-const { cloudinary, storage } = require('./cloudinary/index');
-const users = require('./controllers/users');
-const gyms = require('./controllers/gyms');
-const reviews = require('./controllers/reviews');
+const userRoutes = require('./routes/users');
+const gymRoutes = require('./routes/gyms');
+const reviewRoutes = require('./routes/reviews');
 
-
-const upload = multer({ storage: storage });
 
 // Setup e tratamento de erros da conexão com a database
 mongoose.connect('mongodb://127.0.0.1:27017/active-yelp')
@@ -35,7 +26,7 @@ mongoose.connection.on('error', error => {
     console.log(`Um erro ocorreu na conexão com a database.\nErro:\n${error}`)
 });
 
-// Setups e instanciamentos do Express
+// Setups e instanciamentos
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -58,36 +49,10 @@ app.get('/', (req, res) => {
     res.send('Homepage');
 });
 
-// User routes
-app.get('/register', users.renderRegister);
-
-app.post('/register', catchAsync(users.register));
-
-app.get('/login', users.renderLogin);
-
-app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), users.login);
-
-app.post('/logout', users.logout);
-
-// Gyms routes
-app.get('/gyms', catchAsync(gyms.index));
-
-app.get('/gyms/new', isLoggedIn, gyms.renderNewForm);
-
-app.post('/gyms', isLoggedIn, upload.array('images', 8), catchAsync(gyms.createGym));
-
-app.get('/gyms/:id', catchAsync(gyms.showGym));
-
-app.get('/gyms/:id/edit', isLoggedIn, isGymAuthor, catchAsync(gyms.renderEditForm));
-
-app.put('/gyms/:id', isLoggedIn, isGymAuthor, upload.array('images'), catchAsync(gyms.updateGym));
-
-app.delete('/gyms/:id', isLoggedIn, isGymAuthor, catchAsync(gyms.deleteGym));
-
-// Review routes
-app.post('/gyms/:id', isLoggedIn, catchAsync(reviews.createReview));
-
-app.delete('/gyms/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview));
+// Routes
+app.use('/', userRoutes);
+app.use('/gyms', gymRoutes);
+app.use('/gyms/:id/reviews', reviewRoutes);
 
 
 // Middleware de tratamento de erro
