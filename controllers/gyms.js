@@ -5,11 +5,11 @@ const { cloudinary } = require('../cloudinary/index');
 
 const index = async (req, res) => {
     const allGyms = await Gym.find({});
-    res.render('index', { gyms: allGyms, user: req.user });
+    res.render('gyms/index', { gyms: allGyms, user: req.user });
 };
 
 const renderNewForm = (req, res) => {
-    res.render('new');
+    res.render('gyms/new');
 };
 
 const createGym = async (req, res, next) => {
@@ -29,14 +29,14 @@ const showGym = async (req, res) => {
             populate: {
                 path: 'author'
             }
-        });
-    res.render('show', { gym: foundGym, user: req.user });
+        }).populate('author');
+    res.render('gyms/show', { gym: foundGym, user: req.user });
 };
 
 const renderEditForm = async (req, res) => {
     const { id } = req.params;
     const foundGym = await Gym.findById(id);
-    res.render('edit', { gym: foundGym });
+    res.render('gyms/edit', { gym: foundGym });
 };
 
 const updateGym = async (req, res) => {
