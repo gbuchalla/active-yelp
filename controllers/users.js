@@ -3,7 +3,7 @@ const { joiUserSchema } = require('../joiSchemas');
 const ExpressError = require('../utils/newExpressError');
 
 const renderRegister = (req, res) => {
-    res.render('register');
+    res.render('users/register', {user: req.user});
 };
 
 const register = async (req, res, next) => {
@@ -23,7 +23,7 @@ const register = async (req, res, next) => {
 };
 
 const renderLogin = (req, res) => {
-    res.render('login');
+    res.render('users/login', {user: req.user});
 };
 
 const login = (req, res) => {
