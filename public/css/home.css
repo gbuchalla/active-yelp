@@ -1,0 +1,62 @@
+body {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6),
+            rgba(0, 0, 0, 0.7)), url("https://images.unsplash.com/photo-1580086319619-3ed498161c77?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=869&q=80");
+    background-size: cover;
+    background-position: center;
+    text-shadow: 0 0.05rem 0.1rem rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.5);
+}
+
+header div {
+    justify-content: space-around;
+}
+
+header .header-link {
+    color: rgba(189, 189, 189, 0.85);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+header button.header-link {
+    border: none;
+    background: none;
+}
+
+header .header-link:hover {
+    color: rgba(189, 189, 189, 0.85);
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+    text-decoration-thickness: 0.2rem;
+}
+
+header .header-link:active {
+    color: white;
+}
+
+header a:nth-of-type(1) {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+    text-decoration-thickness: 0.2rem;
+}
+
+main div {
+    line-height: 1.8rem;
+    font-size: 1.2rem;
+    font-weight: 300;
+    word-spacing: 0.1rem;
+}
+
+main .btn {
+    font-weight: 700;
+    color: rgb(50, 50, 50);
+    text-shadow:none;
+
+}
+
+main .btn:hover, main .btn:focus {
+    background-color: rgb(235, 235, 235);
+    color: rgb(50, 50, 50);
+}
