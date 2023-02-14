@@ -10,6 +10,17 @@ const gymSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    geometry: { // Para GeoJSONs do tipo 'Point'
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number], // As APIs do mapbox exigem longitude como 1ª coordenada
+            required: true
+        }
+    },
     description: {
         type: String,
         required: true

@@ -7,6 +7,8 @@
     <title>Gym <%= gym.title %> </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/starability-basic.min.css">
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" >
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
 
 </head>
 
@@ -66,7 +68,10 @@
             <% } %>
             <% } %>
             </div>
-            <div class="col-12 col-md-10 col-lg-6 mb-3">          
+            <div class="col-12 col-md-10 col-lg-6 mb-3">
+
+                <div id="map" class="w-100 mb-3" style="aspect-ratio:2/1"></div>
+                
                 <h4 class="mb-3 text-center">New Review</h4>
                 <form action="/gyms/<%= gym._id %>/reviews" method="POST">
                     <div class="mb-3">
@@ -121,15 +126,18 @@
     </main>
 
     <%- include ("../partials/footer.ejs") %> 
-
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
         integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
         integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
-        crossorigin="anonymous"></script>
-
-
+        crossorigin="anonymous">
+    </script>
+    
+    <script> const gym = <%- JSON.stringify(gym) %> </script>
+    <script src="/scripts/singleGymMap.js"></script>
 </body>
 
 </html>
