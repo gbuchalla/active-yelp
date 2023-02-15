@@ -6,6 +6,12 @@ const joiGymSchema = Joi.object({
 
     location: Joi.string()
         .required(),
+    
+    geometry: Joi.object({
+        type: Joi.string().valid('Point').required(),
+
+        coordinates: Joi.array().items(Joi.number()).length(2).required()
+    }),
 
     description: Joi.string()
         .required(),
@@ -13,6 +19,7 @@ const joiGymSchema = Joi.object({
     images: Joi.array()
         .items(Joi.object({
             url: Joi.string().required(),
+            
             fileName: Joi.string().required()
         }))
         .max(8)
