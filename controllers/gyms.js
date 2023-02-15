@@ -1,6 +1,7 @@
 const Gym = require('../models/gym');
 const { joiGymSchema } = require('../joiSchemas');
 const { cloudinary } = require('../cloudinary/index');
+const forwardGeocode = require('../mapbox/index');
 
 
 const index = async (req, res) => {
@@ -14,10 +15,15 @@ const renderNewForm = (req, res) => {
 
 const createGym = async (req, res, next) => {
     const gymImages = req.files.map(image => ({ url: image.path, fileName: image.filename }));
-    const validGymData = await joiGymSchema.validateAsync({ ...req.body.gym, images: gymImages });
+    const geocodingResults = await forwardGeocode(req.body.gym.location);
+    const { type, coordinates } = geocodingResults.body.features[0].geometry;
+    const validGymData = await joiGymSchema.validateAsync({
+        ...req.body.gym,
+        geometry: { type, coordinates },
+        images: gymImages
+    });
     const newGym = new Gym({ ...validGymData, author: req.user });
     await newGym.save();
-    console.log(newGym);
     res.redirect(`/gyms/${newGym._id}`);
 };
 
@@ -42,9 +48,11 @@ const renderEditForm = async (req, res) => {
 const updateGym = async (req, res) => {
     const { id } = req.params;
     const newImages = req.files.map((image) => ({ url: image.path, fileName: image.filename }));
-    await joiGymSchema.validateAsync({ ...req.body.gym, images: newImages });
+    const geocodingResults = await forwardGeocode(req.body.gym.location);
+    const { type, coordinates } = geocodingResults.body.features[0].geometry;
+    await joiGymSchema.validateAsync({ ...req.body.gym, geometry: { type, coordinates }, images: newImages });
     const foundGym = await Gym.findById(id);
-    foundGym.set(req.body.gym);
+    foundGym.set({...req.body.gym, geometry: { type, coordinates }});
     foundGym.images.push(...newImages);
     // Lógica de remoção das imagens selecionadas
     if (req.body.deleteImages) {
