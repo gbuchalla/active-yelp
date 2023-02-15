@@ -19,7 +19,7 @@ const gymCities = [];
 const gymCoordinates = [];
 
 // Número de seed gyms = i.
-for (let i = 1; i <= 300; i++) {
+for (let i = 1; i <= 150; i++) {
     const descriptor = descriptors[Math.floor(Math.random() * descriptors.length)];
     const place = places[Math.floor(Math.random() * places.length)];
     const city = cities[Math.floor(Math.random() * cities.length)];
