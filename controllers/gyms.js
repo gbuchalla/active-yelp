@@ -24,6 +24,7 @@ const createGym = async (req, res, next) => {
     });
     const newGym = new Gym({ ...validGymData, author: req.user });
     await newGym.save();
+    req.flash('success', 'Academia registrada com sucesso!');
     res.redirect(`/gyms/${newGym._id}`);
 };
 
@@ -36,12 +37,20 @@ const showGym = async (req, res) => {
                 path: 'author'
             }
         }).populate('author');
+    if (!foundGym) {
+        req.flash('failure', 'Não foi possível encontrar esta academia');
+        return res.redirect('/gyms');
+    };
     res.render('gyms/show', { gym: foundGym, user: req.user });
 };
 
 const renderEditForm = async (req, res) => {
     const { id } = req.params;
     const foundGym = await Gym.findById(id);
+    if (!foundGym) {
+        req.flash('failure', 'Não foi possível encontrar esta academia');
+        return res.redirect('/gyms');
+    };
     res.render('gyms/edit', { gym: foundGym });
 };
 
@@ -68,6 +77,7 @@ const updateGym = async (req, res) => {
             .then(result => console.log('Cloudinary images removal feedback:', result)); // Pode retirar o feedback
     };
     await foundGym.save();
+    req.flash('success', 'Dados da academia atualizados!');
     res.redirect(`/gyms/${id}`);
 };
 
@@ -78,6 +88,7 @@ const deleteGym = async (req, res) => {
         await cloudinary.uploader.destroy(image.fileName).then(result => console.log(result));
     });
     await foundGym.delete();
+    req.flash('info', 'A academia foi removida com sucesso');
     res.redirect('/gyms');
 };
 

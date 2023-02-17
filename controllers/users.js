@@ -17,6 +17,7 @@ const register = async (req, res, next) => {
             if (error) {
                 return next(new ExpressError(error.status, `Um erro ocorreu no login do usuário: ${error.message}`));
             };
+            req.flash('success', 'Seja bem vindo(a) ao ActiveYelp!')
             res.redirect('/gyms');
         });
     });
@@ -27,6 +28,7 @@ const renderLogin = (req, res) => {
 };
 
 const login = (req, res) => {
+    req.flash('success', 'Seja bem vindo(a) ao ActiveYelp!')
     res.redirect('/gyms');
 };
 
