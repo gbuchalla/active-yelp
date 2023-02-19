@@ -85,9 +85,10 @@ app.all('*', (req, res, next) => {
     next(new ExpressError(404, 'Página não encontrada.'))
 });
 
-app.use((err, req, res, next) => {
+app.use(async (err, req, res, next) => {
     const { name, status = 500, message = 'Ops, algo deu errado.', stack } = err;
-    res.status(status).send(`Error Message: ${message}... Error Stack: ${stack}`);
+    if (err.name === 'ValidationError') status = 400;
+    res.status(status).render('error', { err });
     console.log(`\nError\nName: ${name}\nStatus: ${status}\nMessage: ${message}\nStack: ${stack}\n\n Full Error:\n`, err);
 });
 
