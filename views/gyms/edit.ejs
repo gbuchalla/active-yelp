@@ -1,82 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('/layouts/boilerplate') -%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit gym <%= gym.title %>
-    </title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-</head>
+<% block('head').append(`<title>Edit gym · ActiveYelp</title>`) %>
 
-<body class="bg-dark text-light my-3">
+<h2 class="text-center">Fill in the form with the gym information</h2>
+<form action="/gyms/<%= gym._id %>/?_method=PUT" method="POST" enctype="multipart/form-data" class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate>
+    <div class="col-md-12">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="gym[title]" value = "<%= gym.title %>" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please enter the gym title.
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="gym[location]" value = "<%= gym.location %>" required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please enter the gym location.
+        </div>
+    </div>
+    <div class="col-md-12">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="gym[description]" required><%= gym.description %></textarea>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please enter a description for the gym.
+        </div>
+    </div>
+    <div class="col-md-8">
+        <label for="images" class="form-label">Image</label>
+        <input type="file" class="form-control" id="images" name="images" multiple>
+    </div>
+    <h6>You can select the gym images you wish to <span class="text-danger">delete</span> below:</h6>
+    <% gym.images.forEach(img=> { %>
+        <% if(img && img.url) { %> 
+    <div class="form-check col-lg-6">
+        <input class="form-check-input" type="checkbox" name="deleteImages" value="<%= img.fileName %>" id="img-<%= img.fileName %>">
+        <label class="form-check-label" for="img-<%= img.fileName %>">
+            <img src="<%= img.url %>" class="img-fluid img-thumbnail" style="width:200px; height: 200px;" alt="">
+        </label>
+    </div>
+    <% } %> 
+    <% }) %>
 
-    <h2 class="text-center">Fill in the form with the gym information</h2>
-    <form action="/gyms/<%= gym._id %>/?_method=PUT" method="POST" enctype="multipart/form-data"
-        class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate>
-        <div class="col-md-12">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="gym[title]" value="<%= gym.title %>"
-                required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter the gym title.
-            </div>
-        </div>
-        <div class="col-lg-8">
-            <label for="location" class="form-label">Location</label>
-            <input type="text" class="form-control" id="location" name="gym[location]"
-                value="<%= gym.location %>" required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter the gym location.
-            </div>
-        </div>
-        <div class="col-md-12">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="gym[description]"
-                required><%= gym.description %></textarea>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter a description for the gym.
-            </div>
-        </div>
-        <div class="col-md-8">
-            <label for="images" class="form-label">Image</label>
-            <input type="file" class="form-control" id="images" name="images" multiple>
-        </div>
-        <h6>You can select the gym images you wish to <span class="text-danger">delete</span> below:</h6>
-        <% gym.images.forEach(img=> { %>
-        <% if(img && img.url) { %>
-        <div class="form-check col-lg-6">
-            <input class="form-check-input" type="checkbox" name="deleteImages" value="<%= img.fileName %>"
-                id="img-<%= img.fileName %>">
-            <label class="form-check-label" for="img-<%= img.fileName %>">
-                <img src="<%= img.url %>" class="img-fluid img-thumbnail" style="width:200px; height: 200px;" alt="">
-            </label>
-        </div>
-        <% } %>
-        <% }) %>
-        <div class="col-12">
-            <button class="btn btn-success" type="submit">Submit form</button>
-        </div>
-    </form>
+    <div class="col-12">
+        <button class="btn btn-success" type="submit">Submit form</button>
+    </div>
+</form>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
-        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
-        crossorigin="anonymous"></script>
     <script src="/scripts/formValidation.js"></script>
-
-</body>
-
-</html>

@@ -10,6 +10,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const engine = require('ejs-mate')
 
 const User = require('./models/user');
 const ExpressError = require('./utils/newExpressError');
@@ -31,6 +32,7 @@ mongoose.connection.on('error', error => {
 // Setups e instanciamentos
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.engine('ejs', engine);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
