@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-lg-4">
             <div class="ratio" style="--bs-aspect-ratio: 80%;">
-            <img src="<%= gym.images[0].url %> " class="img-fluid" alt="gym image">
+            <img src="<%= gym.images[0].carouselUrl %> " class="img-fluid" alt="gym image">
             </div>
         </div>
         <div class="col-lg-8">
@@ -35,55 +35,17 @@
 </div>
 <% }) %>
 
-    <main class="container mt-5 mb-4">
-
-        <div id="map" class="mapboxgl-map mx-auto mb-3" style="width: 99.5%; height: 65vh;"></div>
-
-        <h2 class="mb-5 mt-4 text-center">All Gyms</h2>
-        <% gyms.forEach(gym => { %>
-        <div class="card mb-3">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="ratio" style="--bs-aspect-ratio: 80%;">
-                    <% if(gym.images && gym.images.length) {%>
-                        <img src="<%= gym.images[0].url %>" class="img-fluid" alt="gym image">
-                    <% } else { %>
-                        <img src="https://images.unsplash.com/photo-1623874514711-0f321325f318?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1
-                        wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" class="img-fluid" alt="gym image">
-                    <% } %>                    
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <div class="card-body text-center text-lg-start">
-                        <h5 class="card-title"><%= gym.title %></h5>
-                        <p class="card-text text-center text-lg-start"> 
-                            <%= gym.description.substr(0, 197) %><% if(gym.description.length > 197) { %>...<% } %>
-                        </p> 
-                        <p class="card-text">
-                            <small class="text-muted"><%= gym.location %></small>
-                        </p>
-                        <a href="/gyms/<%= gym._id %>" class="btn text-light" style="background-color: #3a6332"> 
-                            View <%= gym.title %>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <% }) %>
-    </main>
-
-
-    <script>
-        // Script de criação dos dados geoJSON para renderização do cluster map.
-        const gyms = <%- JSON.stringify(gyms) %>;
-        const gymGeoData = { 'type': 'FeatureCollection', 'features': [] };
-        for (gym of gyms) {
-            gymGeoData.features.push({
-                'type': 'Feature',
-                'geometry': gym.geometry,
-                'properties': { id: gym._id, title: gym.title, description: gym.description }
-            })
-        };
-    </script>
-    <script src="/scripts/clusterMap.js"></script>
+<script>
+    // Script de criação dos dados geoJSON para renderização do cluster map.
+    const gyms = <%- JSON.stringify(gyms) %>;
+    const gymGeoData = { 'type': 'FeatureCollection', 'features': [] };
+    for (gym of gyms) {
+        gymGeoData.features.push({
+            'type': 'Feature',
+            'geometry': gym.geometry,
+            'properties': { id: gym._id, title: gym.title, description: gym.description }
+        })
+    };
+</script>
+<script src="/scripts/clusterMap.js"></script>
 
