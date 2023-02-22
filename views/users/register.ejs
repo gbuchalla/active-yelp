@@ -1,82 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('/layouts/boilerplate') -%>
+<% block('head').append('<title>Register an account · ActiveYelp</title>') %> 
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register an ActiveYelp account</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-
-</head>
-
-<body class="d-flex flex-column vh-100">
-
-    <%- include ("../partials/navbar.ejs") %>
-
-        <main class="container mt-5 mb-4 h-100">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8 col-xl-4 mx-auto align-self-center">
-                    <div class="card">
-                        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=MnwxMjA3
-                        fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=775&q=80" class="card-img-top" alt="campground's tent">
-                        <div class="card-body">
-                            <h5 class="card-title">Register</h5>
-                            <form action="/register" method="POST" class="needs-validation" novalidate>
-                                <div class="col-12 mb-3 card-text">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="user[username]"
-                                        required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                    <div class="invalid-feedback">
-                                        Please choose an username.
-                                    </div>
-                                </div>
-                                <div class="col-12 mb-3 card-text">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="user[email]"
-                                        placeholder="email@example.com" required>
-                                    <div class="invalid-feedback">
-                                        Please enter a valid email. Email must have 2 domain parts e.g. <span
-                                            class="fst-italic">example.com</span>
-                                    </div>
-                                </div>
-                                <div class="col-12 mb-3 card-text">
-                                    <label for="password" class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="password" name="user[password]"
-                                        required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                    <div class="invalid-feedback">
-                                        Please choose a password
-                                    </div>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-success rounded-1">Sign me up</button>
-                                    <a href="/login" class="btn btn-secondary rounded-1">Already signed up? Login
-                                        here</a>
-                                </div>
-                            </form>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 align-self-center">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=MnwxMjA3
+                fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=775&q=80" class="card-img-top" alt="gym image">
+            <div class="card-body">
+                <h5 class="card-title">Register</h5>
+                <form action="/register" method="POST" class="needs-validation" novalidate>
+                    <div class="col-12 mb-3 card-text">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="user[username]" required>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please choose an username.
                         </div>
                     </div>
-                </div>
+                    <div class="col-12 mb-3 card-text">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="user[password]" required>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please choose a password
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success rounded-1">Sign me up</button>
+                        <a href="/login" class="btn btn-secondary rounded-1">Already signed up? Login here</a>
+                    </div>
+                </form>
             </div>
-        </main>
+        </div>
+    </div>
+</div>
 
-        <%- include ("../partials/footer.ejs") %>
-
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
-                integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
-                crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-                integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
-                crossorigin="anonymous"></script>
-
-            <script src="/scripts/formValidation.js"></script>
-
-</body>
-
-</html>
+<script src="/scripts/formValidation.js"></script>

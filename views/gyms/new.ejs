@@ -1,75 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('/layouts/boilerplate') -%>
+   
+<% block('head').append('<title>New Gym · ActiveYelp</title>') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create a new gym</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+<h2 class="text-center">Fill in the form with the gym information</h2>
 
-</head>
-
-<body class="bg-dark text-light my-5">
-
-    <h2 class="text-center">Fill in the form with the gym information</h2>
-
-    <form action="/gyms" method="POST" enctype="multipart/form-data"
-        class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate>
-        <div class="col-md-12">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="gym[title]" required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter the gym title.
-            </div>
+<form action="/gyms" method="POST" enctype="multipart/form-data" class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate >
+    <div class="col-md-12">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="gym[title]" required>
+        <div class="valid-feedback">
+            Looks good!
         </div>
-        <div class="col-lg-8">
-            <label for="location" class="form-label">Location</label>
-            <input type="text" class="form-control" id="location" name="gym[location]" required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter the gym location.
-            </div>
+        <div class="invalid-feedback">
+            Please enter the gym title.
         </div>
-        <div class="col-md-12">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="gym[description]" required></textarea>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please enter a description for the gym.
-            </div>
+    </div>
+    <div class="col-lg-8">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="gym[location]" required>
+        <div class="valid-feedback">
+            Looks good!
         </div>
-        <div class="col-md-8">
-            <label for="images" class="form-label">Image</label>
-            <input type="file" class="form-control" id="images" name="images" multiple required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please select at least 1 image of the gym.
-            </div>
+        <div class="invalid-feedback">
+            Please enter the gym location.
         </div>
-        <div class="col-12">
-            <button class="btn btn-success" type="submit">Submit form</button>
+    </div>
+    <div class="col-md-12">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="gym[description]" required></textarea>
+        <div class="valid-feedback">
+            Looks good!
         </div>
-    </form>
+        <div class="invalid-feedback">
+            Please enter a description for the gym.
+        </div>
+    </div>
+    <div class="col-md-8">
+        <label for="images" class="form-label">Image</label>
+        <input type="file" class="form-control" id="images" name="images" multiple required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please upload at least 1 image of the gym.
+        </div>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-success" type="submit">Submit form</button>
+    </div>
+</form>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
-        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
-        crossorigin="anonymous"></script>
-
-    <script src="/scripts/formValidation.js"></script>
-
-</body>
-
-</html>
+<script src="/scripts/formValidation.js"></script>

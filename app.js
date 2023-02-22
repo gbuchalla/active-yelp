@@ -10,6 +10,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const engine = require('ejs-mate')
 
 const User = require('./models/user');
 const ExpressError = require('./utils/newExpressError');
@@ -31,6 +32,7 @@ mongoose.connection.on('error', error => {
 // Setups e instanciamentos
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.engine('ejs', engine);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
@@ -83,9 +85,10 @@ app.all('*', (req, res, next) => {
     next(new ExpressError(404, 'Página não encontrada.'))
 });
 
-app.use((err, req, res, next) => {
+app.use(async (err, req, res, next) => {
     const { name, status = 500, message = 'Ops, algo deu errado.', stack } = err;
-    res.status(status).send(`Error Message: ${message}... Error Stack: ${stack}`);
+    if (err.name === 'ValidationError') status = 400;
+    res.status(status).render('error', { err });
     console.log(`\nError\nName: ${name}\nStatus: ${status}\nMessage: ${message}\nStack: ${stack}\n\n Full Error:\n`, err);
 });
 

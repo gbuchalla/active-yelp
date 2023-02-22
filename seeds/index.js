@@ -4,6 +4,7 @@ const Review = require('../models/review');
 
 const cities = require('./cities');
 const { descriptors, places } = require('./seedHelpers');
+const gymImages = require('./sampleImages');
 
 const dbUrl = 'mongodb://127.0.0.1:27017/active-yelp';
 
@@ -41,11 +42,11 @@ for (let i = 0; i < gymTitles.length; i++) {
         },
         description: 'Academia espaçosa, cheia de equipamentos e com uma equipe atenciosa.',
         images: [{
-            url: `https://source.unsplash.com/random/?empty-gym&${i}`, // Adição parâmetros aleatórios (i e i+0.5) para variar as imagens geradas.
+            url: gymImages[Math.floor(Math.random() * gymImages.length)], // Adição parâmetros aleatórios (i e i+0.5) para variar as imagens geradas.
             fileName: `gymImage${i}`
         },
         {
-            url: `https://source.unsplash.com/random/?empty-gym&${i + 0.5}`,
+            url: gymImages[Math.floor(Math.random() * gymImages.length)],
             fileName: `gymImage${i + 0.5}`
         }],
         author: "63dffe88c49295fa4e990043" // _id de um user da database utilizada
