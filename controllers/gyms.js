@@ -6,7 +6,7 @@ const forwardGeocode = require('../mapbox/index');
 
 const index = async (req, res) => {
     const allGyms = await Gym.find({});
-    res.render('gyms/index', { gyms: allGyms, user: req.user });
+    res.render('gyms/index', { gyms: allGyms});
 };
 
 const renderNewForm = (req, res) => {
@@ -41,7 +41,7 @@ const showGym = async (req, res) => {
         req.flash('failure', 'Não foi possível encontrar esta academia');
         return res.redirect('/gyms');
     };
-    res.render('gyms/show', { gym: foundGym, user: req.user });
+    res.render('gyms/show', { gym: foundGym});
 };
 
 const renderEditForm = async (req, res) => {
