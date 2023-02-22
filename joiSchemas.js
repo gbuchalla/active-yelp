@@ -1,11 +1,37 @@
-const Joi = require('joi');
+const BaseJoi = require('joi');
+const sanitizeHtml = require('sanitize-html');
+
+const extension = (joi) => ({
+    type: 'string',
+    base: joi.string(),
+    messages: {
+        'string.escapeHTML': '{{#label}} não pode incluir HTML!'
+    },
+    rules: {
+        escapeHTML: {
+            validate(value, helpers) {
+                const clean = sanitizeHtml(value, {
+                    allowedTags: [],
+                    allowedAttributes: {},
+                });
+                if (clean !== value) return helpers.error('string.escapeHTML', { value })
+                return clean;
+            }
+        }
+    }
+});
+
+const Joi = BaseJoi.extend(extension);
+
 
 const joiGymSchema = Joi.object({
     title: Joi.string()
-        .required(),
+        .required()
+        .escapeHTML(),
 
     location: Joi.string()
-        .required(),
+        .required()
+        .escapeHTML(),
     
     geometry: Joi.object({
         type: Joi.string().valid('Point').required(),
@@ -14,7 +40,8 @@ const joiGymSchema = Joi.object({
     }),
 
     description: Joi.string()
-        .required(),
+        .required()
+        .escapeHTML(),
     
     images: Joi.array()
         .items(Joi.object({
@@ -32,6 +59,7 @@ const joiReviewSchema = Joi.object({
 
     description: Joi.string()
         .required()
+        .escapeHTML()
 });
 
 const joiUserSchema = Joi.object({
