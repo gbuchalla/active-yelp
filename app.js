@@ -11,6 +11,8 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const engine = require('ejs-mate')
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const User = require('./models/user');
 const ExpressError = require('./utils/newExpressError');
@@ -38,16 +40,69 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+app.use(mongoSanitize({ replaceWith: '_' }));
+app.use(helmet({
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false
+}));
+
+
+const scriptSrcUrls = [
+    'https://stackpath.bootstrapcdn.com',
+    'https://api.tiles.mapbox.com',
+    'https://api.mapbox.com',
+    'https://kit.fontawesome.com',
+    'https://cdnjs.cloudflare.com',
+    'https://cdn.jsdelivr.net',
+];
+const styleSrcUrls = [
+    'https://kit-free.fontawesome.com',
+    'https://stackpath.bootstrapcdn.com',
+    'https://cdn.jsdelivr.net',
+    'https://api.mapbox.com',
+    'https://api.tiles.mapbox.com',
+    'https://fonts.googleapis.com',
+    'https://use.fontawesome.com',
+];
+const connectSrcUrls = [
+    'https://api.mapbox.com',
+    'https://*.tiles.mapbox.com',
+    'https://events.mapbox.com',
+];
+const fontSrcUrls = [];
+
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: [],
+        connectSrc: ["'self'", ...connectSrcUrls],
+        scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+        styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+        workerSrc: ["'self'", "blob:"],
+        childSrc: ["blob:"],
+        objectSrc: [],
+        imgSrc: [
+            "'self'",
+            'blob:',
+            'data:',
+            `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`,
+            'https://images.unsplash.com',
+        ],
+        fontSrc: ["'self'", ...fontSrcUrls],
+    },
+}));
+
+
 const sessionConfig = {
-    secret: 'random secret',
+    name: 'session.name',
+    secret: 'randomsecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
         // secure: true // Utilizar só em ambiente de produção (deve ser utilizado somente em https).
     }
-}
+};
 
 app.use(session(sessionConfig));
 app.use(flash());
@@ -86,10 +141,9 @@ app.all('*', (req, res, next) => {
 });
 
 app.use(async (err, req, res, next) => {
-    const { name, status = 500, message = 'Ops, algo deu errado.', stack } = err;
-    if (err.name === 'ValidationError') status = 400;
-    res.status(status).render('error', { err });
-    console.log(`\nError\nName: ${name}\nStatus: ${status}\nMessage: ${message}\nStack: ${stack}\n\n Full Error:\n`, err);
+    let { statusCode = 500, message = 'Ops, algo deu errado.' } = err;
+    if (err.name === 'ValidationError') statusCode = 400;
+    res.status(statusCode).render('error', { err });
 });
 
 // Configuração do servidor
