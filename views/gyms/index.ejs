@@ -36,6 +36,7 @@
 <% }) %>
 
 <script>
+    const mapboxToken = '<%-process.env.MAPBOX_TOKEN%>';
     // Script de criação dos dados geoJSON para renderização do cluster map.
     const gyms = <%- JSON.stringify(gyms) %>;
     const gymGeoData = { 'type': 'FeatureCollection', 'features': [] };
