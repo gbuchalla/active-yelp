@@ -1,7 +1,5 @@
 // Public Acccess Token do mapbox
-const accessToken = 'pk.eyJ1IjoiZ3VpZ2JmIiwiYSI6ImNsODF1bGYxMTBlczkzcWwxMHZraGo5eHQifQ.TzbXZaREcejUYaVJ74UP8Q'
-
-mapboxgl.accessToken = accessToken;
+mapboxgl.accessToken = mapboxToken;
 
 const map = new mapboxgl.Map({
     container: 'map',
