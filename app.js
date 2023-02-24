@@ -118,10 +118,10 @@ const sessionConfig = {
     store: store,
     resave: true,
     saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
+    cookie: { 
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
-        secure: (process.env.NODE_ENV === 'production') ? true : null // Usar somente em modo de production, em https
+        secure: process.env.NODE_ENV === 'production'
+        // httpOnly: true 
     }
 };
 
