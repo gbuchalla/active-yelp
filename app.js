@@ -1,5 +1,7 @@
-const dotenv = require('dotenv').config();
-if (dotenv.error) throw dotenv.error;
+if (process.env.NODE_ENV !== 'production') {
+    const dotenv = require('dotenv').config();
+    if (dotenv.error) throw dotenv.error;
+};
 
 const express = require('express');
 const app = express();
