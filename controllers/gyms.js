@@ -38,7 +38,7 @@ const showGym = async (req, res) => {
             }
         }).populate('author');
     if (!foundGym) {
-        req.flash('failure', 'Não foi possível encontrar esta academia');
+        req.flash('error', 'Não foi possível encontrar esta academia');
         return res.redirect('/gyms');
     };
     res.render('gyms/show', { gym: foundGym});
@@ -48,7 +48,7 @@ const renderEditForm = async (req, res) => {
     const { id } = req.params;
     const foundGym = await Gym.findById(id);
     if (!foundGym) {
-        req.flash('failure', 'Não foi possível encontrar esta academia');
+        req.flash('error', 'Não foi possível encontrar esta academia');
         return res.redirect('/gyms');
     };
     res.render('gyms/edit', { gym: foundGym });

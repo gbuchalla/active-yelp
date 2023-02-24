@@ -121,5 +121,8 @@
     </div>
 </div>
 
-<script> const gym = <%- JSON.stringify(gym) %> </script>
+<script> 
+    const mapboxToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const gym = <%- JSON.stringify(gym) %> 
+</script>
 <script src="/scripts/singleGymMap.js"></script>

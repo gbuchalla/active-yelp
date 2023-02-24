@@ -7,6 +7,7 @@ const path = require('path');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -21,15 +22,20 @@ const gymRoutes = require('./routes/gyms');
 const reviewRoutes = require('./routes/reviews');
 
 
-
 // Setup e tratamento de erros da conexão com a database
-mongoose.connect('mongodb://127.0.0.1:27017/active-yelp')
+mongoose.set('strictQuery', false);
+
+const localDb = 'mongodb://127.0.0.1:27017/active-yelp'
+const dbUrl = (process.env.NODE_ENV === 'production') ? process.env.DB_URL : localDb
+
+mongoose.connect(dbUrl)
     .then(() => console.log('Conectado com a database'))
     .catch(error => console.log(`Algo deu errado na conexão inicial com a database.\n Erro:\n ${error}`))
 
 mongoose.connection.on('error', error => {
     console.log(`Um erro ocorreu na conexão com a database.\nErro:\n${error}`)
 });
+
 
 // Setups e instanciamentos
 app.set('views', path.join(__dirname, 'views'));
@@ -46,7 +52,7 @@ app.use(helmet({
     crossOriginResourcePolicy: false
 }));
 
-
+// URLs para config do HTTP header 'Content Security Policy', usado pelo Helmet
 const scriptSrcUrls = [
     'https://stackpath.bootstrapcdn.com',
     'https://api.tiles.mapbox.com',
@@ -92,20 +98,34 @@ app.use(helmet.contentSecurityPolicy({
 }));
 
 
+const store = new MongoDBStore({
+    uri: dbUrl,
+    databaseName: 'active-yelp',
+    collection: 'sessions'
+}, function (error) {
+    if (error) console.log('MongoDBStore connection error', error)
+});
+
+store.on('error', (err) => {
+    console.log('session db store error:\n', err);
+});
+
 const sessionConfig = {
     name: 'session.name',
     secret: 'randomsecret',
-    resave: false,
+    store: store,
+    resave: true,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
-        // secure: true // Utilizar só em ambiente de produção (deve ser utilizado somente em https).
+        secure: (process.env.NODE_ENV === 'production') ? true : null // Usar somente em modo de production, em https
     }
 };
 
 app.use(session(sessionConfig));
 app.use(flash());
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -114,14 +134,15 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+
 // Middlewares
 app.use('*', (req, res, next) => {
     res.locals.user = req.user;
     res.locals.success = req.flash('success');
-    res.locals.failure = req.flash('failure');
+    res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
     next();
-})
+});
 
 // Homepage route
 app.get('/', (req, res) => {
