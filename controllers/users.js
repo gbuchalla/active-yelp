@@ -11,7 +11,8 @@ const register = async (req, res, next) => {
     await joiUserSchema.validateAsync({ username, password });
     User.register({ username }, password, (err, newUser) => {
         if (err) {
-            return next(new ExpressError(err.status, `Algo deu errado no registro de usuário: ${err.message}`));
+            req.flash('error', `Erro no registro: ${err.message}`);
+            return res.redirect('register');
         }
         req.login(newUser, error => {
             if (error) {
@@ -28,15 +29,18 @@ const renderLogin = (req, res) => {
 };
 
 const login = (req, res) => {
+    const originalUrl = req.session.returnTo;
+    delete req.session.returnTo;
     req.flash('success', 'Seja bem vindo(a) ao ActiveYelp!')
-    res.redirect('/gyms');
+    res.redirect(originalUrl || '/gyms');
 };
 
 const logout = (req, res, next) => {
-    req.logout(err => {
+    req.logout(async err => {
         if (err) return next(err);
+        req.session.destroy();
+        res.redirect('/gyms');
     });
-    res.redirect('/gyms');
 };
 
 module.exports = { renderRegister, register, renderLogin, login, logout };
