@@ -3,14 +3,14 @@
 <% block('head').append('<title>Gyms · ActiveYelp</title>') %>
 <% block('head').append('<link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">') %>
 <% block('head').append('<script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>') %>
-
+<% block('head').append('<link rel="stylesheet" type="text/css" href="/css/app.css">') %>
 
 <div id="map" class="mapboxgl-map mx-auto mb-3" style="width: 99.5%; height: 65vh;"></div> 
 
 <h2 class="mb-5 mt-4 text-center">All Gyms</h2>
 
 <% gyms.forEach(gym => { %>
-<div class="card mb-3">
+<div class="card mb-3 card-shadow index-card">
     <div class="row">
         <div class="col-lg-4">
             <div class="ratio" style="--bs-aspect-ratio: 80%;">

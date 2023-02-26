@@ -1,14 +1,15 @@
 <% layout('/layouts/boilerplate') -%>
 
 <% block('head').append('<title>Gym details · ActiveYelp</title>') %>
-<% block('head').append('<link rel="stylesheet" type="text/css" href="/css/starability-basic.min.css">') %>
 <% block('head').append('<link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">') %>
 <% block('head').append('<script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>') %>
+<% block('head').append('<link rel="stylesheet" type="text/css" href="/css/starability-basic.min.css">') %>
+<% block('head').append('<link rel="stylesheet" type="text/css" href="/css/app.css">') %>
 
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-6 mb-5">
         <% if (gym.images.length && gym.images[0] && gym.images[0].url) { %>  
-        <div class="card">
+        <div class="card card-shadow">
             <div id="carouselExampleControls" class="carousel slide"  data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
@@ -58,41 +59,46 @@
         <% } %>
         <% } %>
     </div>
-    <div class="col-12 col-md-10 col-lg-6 mb-3">          
-        <div id="map" class="w-100 mb-3" style="aspect-ratio:2/1"></div>
-        <h4 class="mb-3 text-center">New Review</h4>
-        <form action="/gyms/<%= gym._id %>/reviews" method="POST">
-            <div class="mb-3">
-                <fieldset class="starability-basic">
-                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating.">
-                    <input type="radio" id="first-rate1" name="review[rating]" value="1">
-                    <label for="first-rate1" title="Terrible">1 star</label>
-                    <input type="radio" id="first-rate2" name="review[rating]" value="2">
-                    <label for="first-rate2" title="Not good">2 stars</label>
-                    <input type="radio" id="first-rate3" name="review[rating]" value="3">
-                    <label for="first-rate3" title="Average">3 stars</label>
-                    <input type="radio" id="first-rate4" name="review[rating]" value="4">
-                    <label for="first-rate4" title="Very good">4 stars</label>
-                    <input type="radio" id="first-rate5" name="review[rating]" value="5">
-                    <label for="first-rate5" title="Amazing">5 stars</label>
-                </fieldset>
-            </div>
-            <div class="mb-3">
-                <label for="review-description" class="form-label">Leave a description of your review:</label>
-                <textarea class="form-control" id="review-description" name="review[description]" rows="3"></textarea>
-            </div>
-            <button class="btn btn-success btn-sm ms-1">Submit review</button>
-        </form>
+    <div class="col-12 col-md-10 col-lg-6">          
+        <div id="map" class="w-100 mb-5 mb-lg-3 card-shadow" style="aspect-ratio:2/1"></div>
+        <%# if (user) { %>
+         <h4 class="mb-3 text-center">New Review</h4>
+         <div class="mb-5">
+            <form action="/gyms/<%= gym._id %>/reviews" method="POST">
+                <div class="mb-3">
+                    <fieldset class="starability-basic">
+                        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating.">
+                        <input type="radio" id="first-rate1" name="review[rating]" value="1">
+                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <input type="radio" id="first-rate2" name="review[rating]" value="2">
+                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <input type="radio" id="first-rate3" name="review[rating]" value="3">
+                        <label for="first-rate3" title="Average">3 stars</label>
+                        <input type="radio" id="first-rate4" name="review[rating]" value="4">
+                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <input type="radio" id="first-rate5" name="review[rating]" value="5">
+                        <label for="first-rate5" title="Amazing">5 stars</label>
+                    </fieldset>
+                </div>
+                <div class="mb-3">
+                    <label for="review-description" class="form-label">Leave a description of your review:</label>
+                    <textarea class="form-control card-shadow" id="review-description" name="review[description]" rows="3"></textarea>
+                </div>
+                <button class="btn btn-success btn-sm ms-1">Submit review</button>
+            </form>
+        </div>
+        <%# } %>
     </div>
+    <hr class="mb-4">
     <div class="col-12 col-md-10 col-lg-12">
-        <h4 class="text-center">Reviews</h4>
+        <h4 class="text-center mb-4">Reviews</h4>
         <% if (!gym.reviews) { %>
             <div>There's no review for this gym yet...</div>
         <% } else { %>
             <% gym.reviews.forEach(review => { %>
                 <% if (review) { %>   
-                    <div class="card mb-3">
-                        <div class="card-body">
+                    <div class=" card border-0 card-shadow mb-3">
+                        <div class="card-body pb-2">
                             <h5 class="card-title">
                                 <% if(review.author) { %> 
                                     <%= review.author.username %> 
