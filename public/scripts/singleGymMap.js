@@ -9,6 +9,7 @@ const map = new mapboxgl.Map({
     projection: 'globe'
 });
 map.on('style.load', () => {
+    map.resize();
     map.setFog({});
 });
 

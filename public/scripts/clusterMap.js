@@ -14,6 +14,7 @@ map.addControl(nav, 'top-right'); // Top-right já é default
 
 
 map.on('load', () => {
+    map.resize();
     // Add a new source from our GeoJSON data and
     // set the 'cluster' option to true. GL-JS will
     // add the point_count property to your source data.
