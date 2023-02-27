@@ -2,10 +2,11 @@
    
 <% block('head').append('<title>New Gym · ActiveYelp</title>') %>
 
-<h2 class="text-center">Fill in the form with the gym information</h2>
+<h2 class="text-center mb-4">Fill in the form with the gym information</h2>
 
-<form action="/gyms" method="POST" enctype="multipart/form-data" class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate >
-    <div class="col-md-12">
+<form action="/gyms" method="POST" enctype="multipart/form-data" 
+class="row g-3 needs-validation text-center justify-content-center mx-auto" novalidate >
+    <div class="col-md-10 col-lg-7 col-xl-6">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" id="title" name="gym[title]" required>
         <div class="valid-feedback">
@@ -15,7 +16,7 @@
             Please enter the gym title.
         </div>
     </div>
-    <div class="col-lg-8">
+    <div class="col-md-10 col-lg-8 col-xl-7">
         <label for="location" class="form-label">Location</label>
         <input type="text" class="form-control" id="location" name="gym[location]" required>
         <div class="valid-feedback">
@@ -25,7 +26,7 @@
             Please enter the gym location.
         </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-10 col-lg-8 col-xl-7">
         <label for="description" class="form-label">Description</label>
         <textarea class="form-control" id="description" name="gym[description]" required></textarea>
         <div class="valid-feedback">
@@ -35,7 +36,7 @@
             Please enter a description for the gym.
         </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-10 col-lg-7 col-xl-6">
         <label for="images" class="form-label">Image</label>
         <input type="file" class="form-control" id="images" name="images" multiple required>
         <div class="valid-feedback">
