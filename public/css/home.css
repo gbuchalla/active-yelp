@@ -7,6 +7,10 @@ body {
     box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.5);
 }
 
+body div:first-of-type {
+    margin-right: 0;
+}
+
 header div {
     justify-content: space-around;
 }
@@ -22,6 +26,7 @@ header .header-link {
 header button.header-link {
     border: none;
     background: none;
+    padding:0;
 }
 
 header .header-link:hover {
@@ -52,11 +57,33 @@ main div {
 main .btn {
     font-weight: 700;
     color: rgb(50, 50, 50);
-    text-shadow:none;
-
+    text-shadow: none;
 }
 
-main .btn:hover, main .btn:focus {
+main .btn:hover,
+main .btn:focus {
     background-color: rgb(235, 235, 235);
     color: rgb(50, 50, 50);
+}
+
+@media screen and (max-width:400px) {
+    header.mt-2 {
+        margin-top: 0.35rem !important;
+    }
+
+    header>div.d-inline-flex {
+        display: flex;
+        flex-wrap:wrap;
+    }
+
+    header .header-link {
+        margin-left: 1rem;
+        font-size: 19px
+    }
+
+    header h3 {
+    flex: 0 0 auto;
+    width: 100%;
+    font-size: 26px;
+    }
 }

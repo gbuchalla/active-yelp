@@ -5,3 +5,22 @@
 .index-card {
     background-color: rgb(252, 252, 252);
 }
+
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+    div.ratio {
+        --bs-aspect-ratio: 82% !important;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .index-card {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .container {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
