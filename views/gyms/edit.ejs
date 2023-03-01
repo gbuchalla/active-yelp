@@ -2,46 +2,49 @@
 
 <% block('head').append(`<title>Edit gym · ActiveYelp</title>`) %>
 
-<h2 class="text-center">Fill in the form with the gym information</h2>
-<form action="/gyms/<%= gym._id %>/?_method=PUT" method="POST" enctype="multipart/form-data" class="row g-3 needs-validation w-50 text-center justify-content-center mx-auto" novalidate>
-    <div class="col-md-12">
-        <label for="title" class="form-label">Title</label>
+<h4 class="text-center mb-4">Preencha com os novos dados da academia</h4>
+
+<form action="/gyms/<%= gym._id %>/?_method=PUT" method="POST" enctype="multipart/form-data"
+    class="row g-3 needs-validation text-center justify-content-center mx-auto" novalidate>
+    <div class="col-md-10 col-lg-7 col-xl-6">
+        <label for="title" class="form-label">Nome do local</label>
         <input type="text" class="form-control" id="title" name="gym[title]" value = "<%= gym.title %>" required>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter the gym title.
+            É necessário inserir o nome do local.
         </div>
     </div>
-    <div class="col-lg-8">
-        <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" name="gym[location]" value = "<%= gym.location %>" required>
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <label for="location" class="form-label">Endereço</label>
+        <input type="text" class="form-control" id="location" name="gym[location]" value = "<%= gym.location %>" required
+        placeholder="Exemplo: Rua A, número 1. Bairro B. Cidade C - Estado D">
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter the gym location.
+            É necessário inserir o endereço.
         </div>
     </div>
-    <div class="col-md-12">
-        <label for="description" class="form-label">Description</label>
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <label for="description" class="form-label">Descrição</label>
         <textarea class="form-control" id="description" name="gym[description]" required><%= gym.description %></textarea>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter a description for the gym.
+            É necessário inserir ao menos uma breve descrição.
         </div>
     </div>
-    <div class="col-md-8">
-        <label for="images" class="form-label">Image</label>
+    <div class="col-md-10 col-lg-7 col-xl-6">
+        <label for="images" class="form-label">Selecionar novas imagens</label>
         <input type="file" class="form-control" id="images" name="images" multiple>
     </div>
-    <h6>You can select the gym images you wish to <span class="text-danger">delete</span> below:</h6>
+    <h6>Selecione as imagens que deseja <span class="text-danger">deletar</span> abaixo:</h6>
     <% gym.images.forEach(img=> { %>
         <% if(img && img.url) { %> 
-    <div class="form-check col-lg-6">
+    <div class="form-check col-lg-3 mx-lg-3 mx-xl-0">
         <input class="form-check-input" type="checkbox" name="deleteImages" value="<%= img.fileName %>" id="img-<%= img.fileName %>">
         <label class="form-check-label" for="img-<%= img.fileName %>">
             <img src="<%= img.thumbnail %>" class="img-fluid img-thumbnail" style="width:200px; height: 200px;" alt="">
@@ -49,9 +52,8 @@
     </div>
     <% } %> 
     <% }) %>
-
-    <div class="col-12">
-        <button class="btn btn-success" type="submit">Submit form</button>
+    <div class="col-12 mt-4">
+        <button class="btn btn-success" type="submit">Salvar alterações</button>
     </div>
 </form>
 

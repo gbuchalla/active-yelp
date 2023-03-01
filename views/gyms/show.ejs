@@ -44,16 +44,16 @@
                 <li class="list-group-item"><%= gym.location %></li>
             </ul>
             <div class="card-footer text-muted">
-                Submited by <%= gym.author.username %> 
+                Criado por <%= gym.author.username %> 
             </div>
         <% } %>
         </div>
         <% if (gym.author) {%> 
         <% if (user && (String(gym.author._id) === String(user._id)) ) { %> 
         <div class="text-center text-xl-start ms-xl-1">
-        <a class="btn btn-primary btn-sm mt-3 me-1 me-xl-2" href="/gyms/<%= gym._id %>/edit">Edit gym</a>
+        <a class="btn btn-primary btn-sm mt-3 me-1 me-xl-2" href="/gyms/<%= gym._id %>/edit">Editar academia</a>
         <form class="d-inline" action="/gyms/<%= gym._id %>?_method=DELETE" method="POST">
-            <button class="btn btn-danger btn-sm mt-3">Delete gym</button>
+            <button class="btn btn-danger btn-sm mt-3">Deletar academia</button>
         </form>
         </div>
         <% } %>
@@ -61,39 +61,37 @@
     </div>
     <div class="col-12 col-md-10 col-lg-6">          
         <div id="map" class="w-100 mb-5 mb-lg-3 card-shadow" style="aspect-ratio:2/1"></div>
-        <%# if (user) { %>
-         <h4 class="mb-3 text-center">New Review</h4>
+         <h4 class="mb-3 text-center">Nova avaliação</h4>
          <div class="mb-5">
             <form action="/gyms/<%= gym._id %>/reviews" method="POST">
-                <div class="mb-3">
+                <div class="mb-0">
                     <fieldset class="starability-basic">
                         <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating.">
                         <input type="radio" id="first-rate1" name="review[rating]" value="1">
-                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <label for="first-rate1" title="Terrível">1 estrela</label>
                         <input type="radio" id="first-rate2" name="review[rating]" value="2">
-                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <label for="first-rate2" title="Poderia ser melhor">2 estrelas</label>
                         <input type="radio" id="first-rate3" name="review[rating]" value="3">
-                        <label for="first-rate3" title="Average">3 stars</label>
+                        <label for="first-rate3" title="Ok">3 estrelas</label>
                         <input type="radio" id="first-rate4" name="review[rating]" value="4">
-                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <label for="first-rate4" title="Muito bom">4 estrelas</label>
                         <input type="radio" id="first-rate5" name="review[rating]" value="5">
-                        <label for="first-rate5" title="Amazing">5 stars</label>
+                        <label for="first-rate5" title="Excelente">5 estrelas</label>
                     </fieldset>
                 </div>
                 <div class="mb-3">
-                    <label for="review-description" class="form-label">Leave a description of your review:</label>
+                    <label for="review-description" class="form-label">Deixe uma descrição da sua avaliação</label>
                     <textarea class="form-control card-shadow" id="review-description" name="review[description]" rows="3"></textarea>
                 </div>
-                <button class="btn btn-success btn-sm ms-1">Submit review</button>
+                <button class="btn btn-success btn-sm ms-1">Enviar avaliação</button>
             </form>
         </div>
-        <%# } %>
     </div>
     <hr class="mb-4">
     <div class="col-12 col-md-10 col-lg-12">
-        <h4 class="text-center mb-4">Reviews</h4>
-        <% if (!gym.reviews) { %>
-            <div>There's no review for this gym yet...</div>
+        <h4 class="text-center mb-4">Avaliações</h4>
+        <% if (!gym.reviews.length) { %>
+            <div>Ainda não há uma avaliação para essa academia...</div>
         <% } else { %>
             <% gym.reviews.forEach(review => { %>
                 <% if (review) { %>   
@@ -106,15 +104,15 @@
                             </h5>
                             <div class="card-text">
                                 <p class="starability-result" data-rating="<%= review.rating %>">
-                                    Rated: <%= review.rating %> stars
+                                    Classificação: <%= review.rating %> estrelas
                                 </p>
                                 <p>
                                     <%= review.description %>
                                 </p>
                                 <p>
-                                    <% if (user && (String(review.author._id)===String(user._id))) { %>
+                                    <% if (user && (String(review.author._id) === String(user._id))) { %>
                                     <form action="/gyms/<%= gym._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-                                        <button class="btn btn-outline-danger btn-sm"> Delete review </button>
+                                        <button class="btn btn-outline-danger btn-sm"> Deletar review </button>
                                     </form>
                                     <% } %>
                                 </p>

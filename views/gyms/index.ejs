@@ -7,7 +7,7 @@
 
 <div id="map" class="mapboxgl-map rounded mx-auto mb-3" style="width: 99.5%; height: 65vh;"></div> 
 
-<h2 class="mb-5 mt-4 text-center">All Gyms</h2>
+<h2 class="mb-4 mt-5 text-center">Explore as academias</h2>
 
 <% gyms.forEach(gym => { %>
 <div class="card card-shadow index-card col-11 col-sm-10 col-md-10 col-lg-12 mx-auto mb-3">
@@ -27,7 +27,7 @@
                     <small class="text-muted"><%= gym.location %></small>
                 </p>
                 <a href="/gyms/<%= gym._id %>" class="btn text-light" style="background-color: #3a6332"> 
-                    View <%= gym.title %>
+                    Ver mais detalhes
                 </a>
             </div>
         </div>

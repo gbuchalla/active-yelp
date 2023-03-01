@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActiveYelp - Homepage</title>
+    <title>ActiveYelp</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/home.css">
 </head>
@@ -17,11 +17,11 @@
             <div class="d-inline-flex align-items-center w-100 mx-auto">
                 <h3 class="my-0"><span class="text-success">Active</span>Yelp</h3>
                 <div>
-                    <a class="header-link" href="/">Home</a>
-                    <a class="header-link" href="/gyms">Gyms</a>
+                    <a class="header-link" href="/">Início</a>
+                    <a class="header-link" href="/gyms">Academias</a>
                     <% if (!user) { %>
-                        <a class="header-link" href="/login">Login</a>
-                        <a class="header-link" href="/register">Register</a>
+                        <a class="header-link" href="/login">Logar</a>
+                        <a class="header-link" href="/register">Registrar</a>
                         <% } else { %>
                             <form class="d-inline" action="/logout" method="post">
                                 <button class="header-link">Logout</button>
@@ -32,11 +32,10 @@
         </header>
 
         <main class="col-12 align-self-center">
-            <h1>ActiveYelp</h1>
-            <div>Welcome to ActiveYelp!</div>
-            <div>Jump right in and explore our many gyms.</div>
-            <div>Feel free to share some of your own and comment on others!</div>
-            <a href="/gyms" class="btn btn-light rounded-2 mt-3">View Gyms</a>
+            <h1><span class="text-success">Active</span>Yelp</h1>
+            <div>Bem vindo(a) ao ActiveYelp!</div>
+            <div>Explore, compartilhe e deixe avaliações em academias</div>
+            <a href="/gyms" class="btn btn-light rounded-2 mt-3">Explorar lista de academias</a>
 
         </main>
 
