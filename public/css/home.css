@@ -66,7 +66,7 @@ main .btn:focus {
     color: rgb(50, 50, 50);
 }
 
-@media screen and (max-width:400px) {
+@media screen and (max-width:430px) {
     header.mt-2 {
         margin-top: 0.35rem !important;
     }
@@ -78,12 +78,18 @@ main .btn:focus {
 
     header .header-link {
         margin-left: 1rem;
-        font-size: 19px
+        font-size: 19px;
     }
 
     header h3 {
     flex: 0 0 auto;
     width: 100%;
     font-size: 26px;
+    }
+
+    main a.btn {
+        font-size: 18px;
+        --bs-btn-padding-x: 10px;
+        --bs-btn-padding-y: 5px;
     }
 }

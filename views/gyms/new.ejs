@@ -1,53 +1,54 @@
 <% layout('/layouts/boilerplate') -%>
    
-<% block('head').append('<title>New Gym · ActiveYelp</title>') %>
+<% block('head').append('<title>Nova academia · ActiveYelp</title>') %>
 
-<h2 class="text-center mb-4">Fill in the form with the gym information</h2>
+<h4 class="text-center mb-4">Preencha com os dados da academia</h4>
 
-<form action="/gyms" method="POST" enctype="multipart/form-data" 
-class="row g-3 needs-validation text-center justify-content-center mx-auto" novalidate >
+<form action="/gyms" method="POST" enctype="multipart/form-data"
+    class="row g-3 needs-validation text-center justify-content-center mx-auto" novalidate >
     <div class="col-md-10 col-lg-7 col-xl-6">
-        <label for="title" class="form-label">Title</label>
+        <label for="title" class="form-label">Nome do local</label>
         <input type="text" class="form-control" id="title" name="gym[title]" required>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter the gym title.
+            É necessário inserir o nome do local.
         </div>
     </div>
     <div class="col-md-10 col-lg-8 col-xl-7">
-        <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" name="gym[location]" required>
+        <label for="location" class="form-label">Endereço</label>
+        <input type="text" class="form-control" id="location" name="gym[location]" 
+        placeholder="Exemplo: Rua A, número 1. Bairro B. Cidade C - Estado D" required>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter the gym location.
+            É necessário inserir o endereço.
         </div>
     </div>
     <div class="col-md-10 col-lg-8 col-xl-7">
-        <label for="description" class="form-label">Description</label>
+        <label for="description" class="form-label">Descrição</label>
         <textarea class="form-control" id="description" name="gym[description]" required></textarea>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please enter a description for the gym.
+            É necessário inserir ao menos uma breve descrição.
         </div>
     </div>
     <div class="col-md-10 col-lg-7 col-xl-6">
-        <label for="images" class="form-label">Image</label>
+        <label for="images" class="form-label">Imagens <span class="text-muted">(selecione ao menos uma)</span></label>
         <input type="file" class="form-control" id="images" name="images" multiple required>
         <div class="valid-feedback">
-            Looks good!
+            Parece ser válido!
         </div>
         <div class="invalid-feedback">
-            Please upload at least 1 image of the gym.
+           É necessário fazer o upload de ao menos uma imagem.
         </div>
     </div>
-    <div class="col-12">
-        <button class="btn btn-success" type="submit">Submit form</button>
+    <div class="col-12 mt-4">
+        <button class="btn btn-success" type="submit">Registrar academia</button>
     </div>
 </form>
 
